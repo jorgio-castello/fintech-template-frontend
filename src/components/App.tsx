@@ -1,24 +1,49 @@
-import React, { useState, useEffect, useRef } from 'react';
-import '../assets/Animations.css';
-import { CSSTransition } from 'react-transition-group';
+import React, { useEffect, useState } from 'react';
+import LogoutButton from './Auth/AppLogout';
+import PlaidLogin from './Auth/PlaidLogin';
+import { useAuth0 } from '@auth0/auth0-react';
+import AuthenticationFetch from '../fetchHandlers/authentication';
+import { AuthenticationContextInterface } from '../interfaces/authentication';
+import Landing from './Landing';
+import Plaid from './Plaid';
 
-function App() {
-  const welcomeRef = useRef(null);
-  const [showWelcomeMessage, setShowWelcomeMessage] = useState(false);
+const authenticationFetch = new AuthenticationFetch();
+const AuthenticationContext = React.createContext<AuthenticationContextInterface>({
+  fetch: authenticationFetch,
+  oAuthUser: '',
+  plaidPublicToken: null,
+  setPlaidPublicToken: () => {}
+});
+
+const App = () => {
+  const { user, isAuthenticated } = useAuth0();
+  const [plaidPublicToken, setPlaidPublicToken] = useState<string | null>(null);
+
   useEffect(() => {
-    setShowWelcomeMessage(true);
-  }, []);
+    if (isAuthenticated) {
+      authenticationFetch
+        .authenticatePlaid(user.sub)
+        .then(({ plaidPublicToken }) => setPlaidPublicToken(plaidPublicToken));
+    }
+  }, [isAuthenticated]);
+  
   return (
-    <CSSTransition in={showWelcomeMessage} classNames="welcome" timeout={2500} nodeRef={welcomeRef}>
-      <div ref={welcomeRef} className="flex container px-5 py-64 w-full h-screen max-h-screen justify-center mx-auto items-center text-center">
-        <div className="lg:p-20 p-5 rounded shadow mx-auto">
-          <h1 className="text-blue-500 font-thin lg:text-4xl text-2xl">Build anything you want.</h1>
-          <p className="font-thin lg:text-base text-sm">With Typescript, React, TailwindCSS, and React-Transitions</p>
-          <p className="font-hairline lg:text-2xl text-lg">Template by <a href="https://jorg.io" target="_blank" rel="noopener noreferrer" className="text-teal-400 cursor-pointer hover:text-teal-500">jorgio</a></p>
-        </div>
+    <div className="flex container h-screen w-screen justify-center items-center mx-auto">
+      <div className="flex justify-center items-center w-1/2 text-center">
+        {!isAuthenticated && <Landing />}
+        {isAuthenticated && (
+          <AuthenticationContext.Provider value={{ fetch: authenticationFetch, oAuthUser: user, plaidPublicToken, setPlaidPublicToken }}>
+            <div className="w-full p-10">
+              { ! plaidPublicToken  && <PlaidLogin />}
+              <LogoutButton />
+              { plaidPublicToken && <Plaid /> }
+            </div>
+          </AuthenticationContext.Provider> 
+        )}
       </div>
-    </CSSTransition>
+    </div>
   );
 }
 
+export { AuthenticationContext };
 export default App;
