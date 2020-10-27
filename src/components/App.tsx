@@ -28,7 +28,7 @@ const App = () => {
   }, [isAuthenticated]);
   
   return (
-    <div className="flex container h-screen w-screen justify-center items-center mx-auto">
+    <div className="flex container min-h-screen w-screen justify-center items-center mx-auto">
       <div className="flex justify-center items-center w-1/2 text-center">
         {!isAuthenticated && <Landing />}
         {isAuthenticated && (

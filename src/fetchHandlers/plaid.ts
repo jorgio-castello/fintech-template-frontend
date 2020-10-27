@@ -11,6 +11,23 @@ class PlaidFetch {
             .then(res => res.json())
             .catch(err => { throw new Error(err) });
     }
+
+    getTransactions(auth0Token: string, plaidPublicToken: string | null, startDate?: string, endDate?: string): Promise<any> {
+        if (! startDate || ! endDate) { // if dates are not passed, show transactions of the day
+            let tempDate = new Date();
+            let tempDateStr = `${tempDate.getFullYear()}-${`${tempDate.getMonth() + 1}`.padStart(2, '0')}-${`${tempDate.getDate()}`.padStart(2, '0')}`;
+            startDate = tempDateStr;
+            endDate = tempDateStr; 
+        }
+        
+        return fetch(`${this.serverHost}/plaid/getTransactions`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ auth0Token, plaidPublicToken, startDate, endDate })
+        })
+            .then(res => res.json())
+            .catch(err => { throw new Error(err) });
+    }
 }
 
 export default PlaidFetch;
