@@ -1,7 +1,7 @@
 import { PlaidAuthenticationResponse, setPlaidTokenResponse } from "../interfaces/authentication";
 
 class AuthenticationFetch {
-    private serverHost: string = process.env.REACT_APP_APP_SERVER_HOST || 'localhost:3001';
+    private serverHost: string = process.env.REACT_APP_APP_SERVER_HOST || 'http://localhost:3001';
     constructor() {
 
         this.authenticatePlaid = this.authenticatePlaid.bind(this);
