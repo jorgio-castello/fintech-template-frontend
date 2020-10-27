@@ -24,8 +24,8 @@ const App = () => {
       authenticationFetch
         .authenticatePlaid(user.sub)
         .then(({ plaidPublicToken }) => setPlaidPublicToken(plaidPublicToken));
-    }
-  }, [isAuthenticated]);
+    } //eslint-disable-next-line
+  }, [isAuthenticated]); // we do not need the user.sub dependency
   
   return (
     <div className="flex container min-h-screen w-screen justify-center items-center mx-auto">

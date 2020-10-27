@@ -1,8 +1,9 @@
-class PlaidFetch {
-    private serverHost: string = process.env.REACT_APP_APP_SERVER_HOST || 'localhost:3001';
-    constructor () {}
+import { PlaidAccounts, PlaidTransactions } from "../interfaces/plaid";
 
-    getAccounts(auth0Token: string, plaidPublicToken: string | null): Promise<any> { // need to create Plaid Types
+class PlaidFetch {
+    private serverHost: string = process.env.REACT_APP_APP_SERVER_HOST || 'http://localhost:3001';
+
+    getAccounts(auth0Token: string, plaidPublicToken: string | null): Promise<PlaidAccounts[]> { // need to create Plaid Types
         return fetch(`${this.serverHost}/plaid/getAccounts`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -12,7 +13,7 @@ class PlaidFetch {
             .catch(err => { throw new Error(err) });
     }
 
-    getTransactions(auth0Token: string, plaidPublicToken: string | null, startDate?: string, endDate?: string): Promise<any> {
+    getTransactions(auth0Token: string, plaidPublicToken: string | null, startDate?: string, endDate?: string): Promise<PlaidTransactions[]> {
         if (! startDate || ! endDate) { // if dates are not passed, show transactions of the day
             let tempDate = new Date();
             let tempDateStr = `${tempDate.getFullYear()}-${`${tempDate.getMonth() + 1}`.padStart(2, '0')}-${`${tempDate.getDate()}`.padStart(2, '0')}`;

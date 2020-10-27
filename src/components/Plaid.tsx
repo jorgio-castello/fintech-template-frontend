@@ -1,6 +1,7 @@
 import React, { useContext, useState } from 'react';
 import PlaidFetch from '../fetchHandlers/plaid';
 import { AuthenticationContextInterface } from '../interfaces/authentication';
+import { PlaidAccounts, PlaidTransactions } from '../interfaces/plaid';
 import { AuthenticationContext } from './App';
 
 const PlaidAccount = ({data}: any) => {
@@ -29,8 +30,8 @@ const Plaid = () => {
     const authentication = useContext<AuthenticationContextInterface>(AuthenticationContext);
     const plaidFetch = new PlaidFetch();
     
-    const [accounts, setAccounts] = useState([]);
-    const [transactions, setTransactions] = useState([]);
+    const [accounts, setAccounts] = useState<PlaidAccounts[]>([]);
+    const [transactions, setTransactions] = useState<PlaidTransactions[]>([]);
 
     const getAccounts = () => {
         plaidFetch.getAccounts(authentication.oAuthUser.sub, authentication.plaidPublicToken)
